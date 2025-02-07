@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Elements -->
+  <circle cx="400" cy="300" r="250" fill="#f0f0ff" opacity="0.5"/>
+  <circle cx="400" cy="300" r="200" fill="#e0e0ff" opacity="0.3"/>
+  
+  <!-- Book Stack -->
+  <rect x="300" y="250" width="200" height="40" rx="5" fill="#4CAF50"/>
+  <rect x="320" y="220" width="200" height="40" rx="5" fill="#2196F3"/>
+  <rect x="280" y="280" width="200" height="40" rx="5" fill="#9C27B0"/>
+  
+  <!-- Trophy -->
+  <path d="M380 150 L420 150 L430 180 L370 180 Z" fill="#FFD700"/>
+  <path d="M390 180 L410 180 L410 200 L390 200 Z" fill="#FFD700"/>
+  <ellipse cx="400" cy="140" rx="30" ry="10" fill="#FFD700"/>
+  
+  <!-- Stars -->
+  <path d="M600 100 L610 120 L630 120 L615 135 L620 155 L600 145 L580 155 L585 135 L570 120 L590 120 Z" fill="#FFC107"/>
+  <path d="M200 150 L210 170 L230 170 L215 185 L220 205 L200 195 L180 205 L185 185 L170 170 L190 170 Z" fill="#FFC107"/>
+  <path d="M500 400 L510 420 L530 420 L515 435 L520 455 L500 445 L480 455 L485 435 L470 420 L490 420 Z" fill="#FFC107"/>
+  
+  <!-- Progress Bar -->
+  <rect x="250" y="350" width="300" height="20" rx="10" fill="#e0e0e0"/>
+  <rect x="250" y="350" width="200" height="20" rx="10" fill="#4CAF50"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="200" cy="300" r="10" fill="#2196F3"/>
+  <circle cx="600" cy="300" r="10" fill="#9C27B0"/>
+  <circle cx="400" cy="500" r="10" fill="#4CAF50"/>
+  
+  <!-- Quiz Icons -->
+  <rect x="150" y="400" width="40" height="40" rx="5" fill="#2196F3" opacity="0.7"/>
+  <rect x="610" y="400" width="40" height="40" rx="5" fill="#4CAF50" opacity="0.7"/>
+  <rect x="150" y="200" width="40" height="40" rx="5" fill="#9C27B0" opacity="0.7"/>
+  <rect x="610" y="200" width="40" height="40" rx="5" fill="#FFC107" opacity="0.7"/>
+</svg>
