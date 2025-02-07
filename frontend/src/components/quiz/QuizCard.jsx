@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 const QuizCard = ({ quiz, userProgress }) => {
   const navigate = useNavigate();
   const {
-    id,
+    _id,
     title,
     description,
     category,
@@ -27,7 +27,8 @@ const QuizCard = ({ quiz, userProgress }) => {
     timeLimit,
     questionCount,
     points,
-  } = quiz;
+  } = quiz || {}; // Safeguard in case quiz is undefined
+  console.log(_id)
 
   const getDifficultyColor = (level) => {
     switch (level.toLowerCase()) {
@@ -46,6 +47,14 @@ const QuizCard = ({ quiz, userProgress }) => {
     if (progress >= 80) return 'success';
     if (progress >= 50) return 'warning';
     return 'primary';
+  };
+
+  const handleStartQuiz = () => {
+    if (!_id) {
+      alert('Quiz ID is missing');
+      return; // Prevent navigation if ID is missing
+    }
+    navigate(`/quiz/${_id}`);
   };
 
   return (
@@ -69,7 +78,7 @@ const QuizCard = ({ quiz, userProgress }) => {
           <Typography gutterBottom variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
             {title}
           </Typography>
-          
+
           <Box sx={{ mb: 2 }}>
             <Chip
               icon={<CategoryIcon />}
@@ -140,7 +149,7 @@ const QuizCard = ({ quiz, userProgress }) => {
             color="primary"
             variant="contained"
             fullWidth
-            onClick={() => navigate(`/quizzes/${id}`)}
+            onClick={handleStartQuiz} // Using the updated handler here
           >
             {userProgress ? 'Continue Quiz' : 'Start Quiz'}
           </Button>

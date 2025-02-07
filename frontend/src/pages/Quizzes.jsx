@@ -9,6 +9,7 @@ import {
   InputAdornment,
   MenuItem,
   Pagination,
+  CircularProgress,
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
@@ -21,7 +22,7 @@ const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 const Quizzes = () => {
   const dispatch = useDispatch();
   const { quizzes, isLoading } = useSelector((state) => state.quiz);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
@@ -114,46 +115,53 @@ const Quizzes = () => {
           </Grid>
         </Grid>
 
-        {/* Quiz Cards */}
-        <Grid container spacing={3}>
-          {paginatedQuizzes.map((quiz, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={quiz.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <QuizCard quiz={quiz} userProgress={quiz.userProgress} />
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-
-        {/* Pagination */}
-        {filteredQuizzes.length > itemsPerPage && (
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-            <Pagination
-              count={Math.ceil(filteredQuizzes.length / itemsPerPage)}
-              page={page}
-              onChange={handlePageChange}
-              color="primary"
-              size="large"
-            />
-          </Box>
-        )}
-
-        {/* Empty State */}
-        {filteredQuizzes.length === 0 && !isLoading && (
-          <Box
-            sx={{
-              textAlign: 'center',
-              py: 8,
-            }}
-          >
-            <Typography variant="h6" color="text.secondary">
-              No quizzes found matching your criteria
+        {/* Loading Indicator */}
+        {isLoading ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <CircularProgress size={50} />
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              Loading quizzes...
             </Typography>
           </Box>
+        ) : (
+          <>
+            {/* Quiz Cards */}
+            <Grid container spacing={3}>
+              {paginatedQuizzes.map((quiz, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={quiz.id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <QuizCard quiz={quiz} userProgress={quiz.userProgress} />
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Pagination */}
+            {filteredQuizzes.length > itemsPerPage && (
+              <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                <Pagination
+                  count={Math.ceil(filteredQuizzes.length / itemsPerPage)}
+                  page={page}
+                  onChange={handlePageChange}
+                  color="primary"
+                  size="large"
+                />
+              </Box>
+            )}
+
+            {/* Empty State */}
+            {filteredQuizzes.length === 0 && (
+              <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Typography variant="h6" color="text.secondary">
+                  No quizzes found matching your criteria
+                </Typography>
+              </Box>
+            )}
+          </>
         )}
       </motion.div>
     </Container>
