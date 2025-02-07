@@ -34,6 +34,77 @@ const getBadges = asyncHandler(async (req, res) => {
     res.json(badges);
 });
 
+// @desc    Get badge by ID
+// @route   GET /api/badges/:id
+// @access  Private
+const getBadgeById = asyncHandler(async (req, res) => {
+    const badge = await Badge.findById(req.params.id);
+
+    if (badge) {
+        res.json(badge);
+    } else {
+        res.status(404);
+        throw new Error('Badge not found');
+    }
+});
+
+// @desc    Get user badges
+// @route   GET /api/badges/user
+// @access  Private
+const getUserBadges = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user.id)
+        .populate('badges');
+    
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    res.json(user.badges);
+});
+
+// @desc    Update badge
+// @route   PUT /api/badges/:id
+// @access  Private/Admin
+const updateBadge = asyncHandler(async (req, res) => {
+    const badge = await Badge.findById(req.params.id);
+
+    if (!badge) {
+        res.status(404);
+        throw new Error('Badge not found');
+    }
+
+    const updatedBadge = await Badge.findByIdAndUpdate(
+        req.params.id,
+        { ...req.body },
+        { new: true }
+    );
+
+    res.json(updatedBadge);
+});
+
+// @desc    Delete badge
+// @route   DELETE /api/badges/:id
+// @access  Private/Admin
+const deleteBadge = asyncHandler(async (req, res) => {
+    const badge = await Badge.findById(req.params.id);
+
+    if (!badge) {
+        res.status(404);
+        throw new Error('Badge not found');
+    }
+
+    await badge.remove();
+
+    // Remove badge from all users who have it
+    await User.updateMany(
+        { badges: badge._id },
+        { $pull: { badges: badge._id } }
+    );
+
+    res.json({ message: 'Badge removed' });
+});
+
 // @desc    Check and award badges
 // @route   POST /api/badges/check
 // @access  Private
@@ -143,4 +214,8 @@ module.exports = {
     createBadge,
     getBadges,
     checkAndAwardBadges,
+    getBadgeById,
+    getUserBadges,
+    updateBadge,
+    deleteBadge
 };

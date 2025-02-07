@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://edugamebackend.onrender.com/api';
+const API_URL = 'https://education-gamification-backend-4brz.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,

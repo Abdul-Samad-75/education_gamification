@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://edugamebackend.onrender.com/api',
+  baseURL: 'https://education-gamification-backend-4brz.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },

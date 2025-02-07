@@ -7,7 +7,7 @@ const {
 } = require('../controllers/leaderboardController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.get('/', protect, getGlobalLeaderboard);
+router.get('/global', protect, getGlobalLeaderboard);
 router.get('/subject/:subject', protect, getSubjectLeaderboard);
 router.get('/rank', protect, getUserRanking);
 
