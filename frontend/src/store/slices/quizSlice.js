@@ -25,7 +25,9 @@ export const fetchQuizById = createAsyncThunk(
   'quiz/fetchQuizById',
   async (id, { rejectWithValue }) => {
     try {
-      return await quizService.getQuizById(id);
+      const quiz = await quizService.getQuizById(id);
+      console.log('Fetched quiz:', quiz); // Log the fetched quiz data for debugging
+      return quiz;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch quiz');
     }
@@ -78,6 +80,7 @@ const quizSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchQuizById.fulfilled, (state, action) => {
+        console.log('Quiz fetched successfully:', action.payload); // Log the fetched quiz
         state.isLoading = false;
         state.currentQuiz = action.payload;
         state.userAnswers = new Array(action.payload.questions.length).fill(null);
