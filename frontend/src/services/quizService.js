@@ -7,8 +7,14 @@ const quizService = {
   },
 
   async getQuizById(id) {
-    const response = await api.get(`/quizzes/${id}`);
-    return response.data;
+    try {
+      const response = await api.get(`/quizzes/${id}`);
+      console.log('Quiz by ID response:', response.data); // Log the response to verify
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching quiz by ID:", error);
+      throw error;  // Re-throwing the error to be handled in the thunk
+    }
   },
 
   async submitQuiz(id, answers) {
@@ -37,4 +43,4 @@ const quizService = {
   }
 };
 
-export default quizService
+export default quizService;

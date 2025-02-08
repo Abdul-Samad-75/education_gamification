@@ -16,6 +16,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  CircularProgress,
 } from '@mui/material';
 import {
   Timer as TimerIcon,
@@ -30,7 +31,7 @@ const QuizDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { currentQuiz, isLoading } = useSelector((state) => state.quiz);
+  const { currentQuiz, isLoading, error } = useSelector((state) => state.quiz);
   const [showRules, setShowRules] = useState(false);
 
   useEffect(() => {
@@ -38,11 +39,30 @@ const QuizDetail = () => {
   }, [dispatch, id]);
 
   const handleStartQuiz = () => {
-    navigate(`/quizzes/${id}/attempt`);
+    navigate(`/quiz/${id}`);
   };
 
-  if (isLoading || !currentQuiz) {
-    return null; // Add a loading spinner here
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Typography variant="h6" color="error">
+          There was an error fetching the quiz. Please try again later.
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!currentQuiz) {
+    navigate('/404'); // Redirect to a 404 page if quiz is not found
+    return null;
   }
 
   const rules = [
@@ -132,6 +152,7 @@ const QuizDetail = () => {
               size="large"
               onClick={handleStartQuiz}
               sx={{ flex: 1 }}
+              aria-label="Start the quiz"
             >
               Start Quiz
             </Button>
@@ -140,6 +161,7 @@ const QuizDetail = () => {
               size="large"
               startIcon={<InfoIcon />}
               onClick={() => setShowRules(true)}
+              aria-label="View Quiz Rules"
             >
               View Rules
             </Button>
@@ -155,7 +177,7 @@ const QuizDetail = () => {
         fullWidth
       >
         <DialogTitle>Quiz Rules</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ maxHeight: 400, overflow: 'auto' }}>
           <List>
             {rules.map((rule, index) => (
               <ListItem key={index}>

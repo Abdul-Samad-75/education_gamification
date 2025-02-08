@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -25,11 +25,12 @@ import { updateProfile } from '../store/slices/authSlice';
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { user, isLoading, error } = useSelector((state) => state.auth);
+  const { user, isLoading, error, successMessage } = useSelector((state) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
+    password: '', // Add password field (optional)
   });
 
   const handleChange = (e) => {
@@ -42,7 +43,16 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await dispatch(updateProfile(formData));
+
+    // Only include password if the user provides it.
+    const profileData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password || undefined, // Include password only if provided
+    };
+
+    // Dispatch the update profile action
+    await dispatch(updateProfile(profileData)); 
     setIsEditing(false);
   };
 
@@ -50,9 +60,21 @@ const Profile = () => {
     setFormData({
       name: user?.name || '',
       email: user?.email || '',
+      password: '', // Reset password
     });
     setIsEditing(false);
   };
+
+  // Clear success message after a few seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        dispatch({ type: 'auth/clearSuccessMessage' }); // Assuming you have an action for clearing success message
+      }, 5000); // Clear the success message after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, dispatch]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -104,6 +126,13 @@ const Profile = () => {
                 </Alert>
               )}
 
+              {/* Display success message */}
+              {successMessage && (
+                <Alert severity="success" sx={{ mb: 3 }}>
+                  {successMessage}
+                </Alert>
+              )}
+
               <form onSubmit={handleSubmit}>
                 <TextField
                   fullWidth
@@ -124,6 +153,19 @@ const Profile = () => {
                   disabled={!isEditing}
                   sx={{ mb: 3 }}
                 />
+
+                {/* Optional Password Field */}
+                {isEditing && (
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    sx={{ mb: 3 }}
+                  />
+                )}
 
                 {isEditing && (
                   <Box sx={{ display: 'flex', gap: 2 }}>
@@ -149,6 +191,7 @@ const Profile = () => {
             </Paper>
           </Grid>
 
+          {/* Statistics & Achievements Section */}
           <Grid item xs={12} md={6}>
             <Grid container spacing={3}>
               {/* Stats Card */}
