@@ -52,14 +52,71 @@ education-gamification/
 │   ├── models/
 │   ├── routes/
 │   └── server.js
-├── frontend/
-│   ├── public/
-│   └── src/
-│       ├── components/
-│       ├── features/
-│       ├── pages/
-│       ├── services/
-│       └── utils/
-├── package.json
-└── README.md
-```
+├──frontend/
+   ├── node_modules/
+   ├── public/
+   ├── src/
+   │   ├── api/
+   │   │   └── api.js
+   │   ├── assets/
+   │   ├── components/
+   │   │   ├── auth/
+   │   │   ├── badge/
+   │   │   │   └── BadgeCard.jsx
+   │   │   ├── dashboard/
+   │   │   │   ├── ActivityList.jsx
+   │   │   │   ├── QuickActions.jsx
+   │   │   │   └── StatsCard.jsx
+   │   │   ├── form/
+   │   │   │   ├── FormTextField.jsx
+   │   │   │   └── LoadingButton.jsx
+   │   │   ├── layout/
+   │   │   │   ├── AuthLayout.jsx
+   │   │   │   └── MainLayout.jsx
+   │   │   ├── leaderboard/
+   │   │   │   └── LeaderboardRow.jsx
+   │   │   └── quiz/
+   │   │       ├── QuestionCard.jsx
+   │   │       └── QuizCard.jsx
+   │   ├── hooks/
+   │   │   └── useAuth.js
+   │   ├── pages/
+   │   │   ├── Badges.jsx
+   │   │   ├── Dashboard.jsx
+   │   │   ├── LandingPage.jsx
+   │   │   ├── Leaderboard.jsx
+   │   │   ├── Login.jsx
+   │   │   ├── Profile.jsx
+   │   │   ├── QuizAttempt.jsx
+   │   │   ├── QuizDetail.jsx
+   │   │   ├── QuizResults.jsx
+   │   │   ├── Quizzes.jsx
+   │   │   └── Register.jsx
+   │   ├── routes/
+   │   ├── services/
+   │   │   ├── api.js
+   │   │   ├── authService.js
+   │   │   ├── badgeService.js
+   │   │   ├── leaderboardService.js
+   │   │   └── quizService.js
+   │   ├── store/
+   │   │   ├── slices/
+   │   │   │   ├── authSlice.js
+   │   │   │   ├── badgeSlice.js
+   │   │   │   ├── leaderboardSlice.js
+   │   │   │   └── quizSlice.js
+   │   │   ├── index.js
+   │   │   └── store.js
+   │   ├── theme/
+   │   │   └── theme.js
+   │   ├── App.css
+   │   ├── App.jsx
+   │   ├── index.css
+   │   └── main.jsx
+   ├── .gitignore
+   ├── eslint.config.js
+   ├── index.html
+   ├── package-lock.json
+   ├── package.json
+   ├── README.md
+   └── vite.config.js
