@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
@@ -46,9 +46,9 @@ function App() {
                 <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/quizzes" element={<Quizzes />} />
-                  <Route path="/quiz/:id" element={<QuizDetail />} />
-                  <Route path="/quiz/:id/attempt" element={<QuizAttempt />} />
-                  <Route path="/quiz/:id/results" element={<QuizResults />} />
+                  <Route path="/quizzes/:_id" element={<QuizDetail />} />
+                  <Route path="/quizzes/:_id/attempt" element={<QuizAttempt />} />
+                  <Route path="/quizzes/:_id/results" element={<QuizResults />} />
                   <Route path="/badges" element={<Badges />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/profile" element={<Profile />} />

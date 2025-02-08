@@ -9,35 +9,47 @@ const initialState = {
   error: null,
 };
 
+// Fetch Global Leaderboard
 export const fetchGlobalLeaderboard = createAsyncThunk(
   'leaderboard/fetchGlobal',
   async (_, { rejectWithValue }) => {
     try {
-      return await leaderboardService.getGlobalLeaderboard();
+      const response = await leaderboardService.getGlobalLeaderboard();
+      console.log('Global Leaderboard:', response); // Debugging
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch global leaderboard');
+      console.error('Error fetching global leaderboard:', error);
+      return rejectWithValue(error?.response?.data?.message || error?.message || 'Failed to fetch global leaderboard');
     }
   }
 );
 
+// Fetch Subject Leaderboard
 export const fetchSubjectLeaderboard = createAsyncThunk(
   'leaderboard/fetchSubject',
   async (subject, { rejectWithValue }) => {
     try {
-      return await leaderboardService.getSubjectLeaderboard(subject);
+      const response = await leaderboardService.getSubjectLeaderboard(subject);
+      console.log(`Subject Leaderboard (${subject}):`, response); // Debugging
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch subject leaderboard');
+      console.error(`Error fetching leaderboard for ${subject}:`, error);
+      return rejectWithValue(error?.response?.data?.message || error?.message || 'Failed to fetch subject leaderboard');
     }
   }
 );
 
+// Fetch User Rank
 export const fetchUserRank = createAsyncThunk(
   'leaderboard/fetchUserRank',
   async (_, { rejectWithValue }) => {
     try {
-      return await leaderboardService.getUserRank();
+      const response = await leaderboardService.getUserRank();
+      console.log('User Rank:', response); // Debugging
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user rank');
+      console.error('Error fetching user rank:', error);
+      return rejectWithValue(error?.response?.data?.message || error?.message || 'Failed to fetch user rank');
     }
   }
 );
@@ -47,7 +59,10 @@ const leaderboardSlice = createSlice({
   initialState,
   reducers: {
     clearLeaderboardState: (state) => {
+      state.globalLeaderboard = [];
       state.subjectLeaderboard = [];
+      state.userRank = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {

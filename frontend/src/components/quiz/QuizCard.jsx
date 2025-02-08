@@ -7,54 +7,53 @@ import {
   Chip,
   Box,
   LinearProgress,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Timer as TimerIcon,
   QuestionAnswer as QuestionIcon,
   Category as CategoryIcon,
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const QuizCard = ({ quiz, userProgress }) => {
   const navigate = useNavigate();
+
+  // Updated to match the API response
   const {
     _id,
     title,
     description,
-    category,
+    subject, // Replacing `category`
     difficulty,
     timeLimit,
-    questionCount,
+    questions,
     points,
-  } = quiz || {}; // Safeguard in case quiz is undefined
-  console.log(_id)
+  } = quiz || {};
+
+  const questionCount = questions?.length || 0; // Ensure question count is set
+
+  console.log("Quiz ID:", _id);
 
   const getDifficultyColor = (level) => {
-    switch (level.toLowerCase()) {
-      case 'easy':
-        return 'success';
-      case 'medium':
-        return 'warning';
-      case 'hard':
-        return 'error';
+    switch (level?.toLowerCase()) {
+      case "beginner":
+        return "success";
+      case "intermediate":
+        return "warning";
+      case "advanced":
+        return "error";
       default:
-        return 'primary';
+        return "primary";
     }
-  };
-
-  const getProgressColor = (progress) => {
-    if (progress >= 80) return 'success';
-    if (progress >= 50) return 'warning';
-    return 'primary';
   };
 
   const handleStartQuiz = () => {
     if (!_id) {
-      alert('Quiz ID is missing');
-      return; // Prevent navigation if ID is missing
+      alert("Quiz ID is missing");
+      return;
     }
-    navigate(`/quiz/${_id}`);
+    navigate(`/quizzes/${_id}`);
   };
 
   return (
@@ -66,34 +65,34 @@ const QuizCard = ({ quiz, userProgress }) => {
     >
       <Card
         sx={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          '&:hover': {
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          "&:hover": {
             boxShadow: (theme) => theme.shadows[10],
           },
         }}
       >
         <CardContent sx={{ flexGrow: 1 }}>
-          <Typography gutterBottom variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
-            {title}
+          <Typography gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
+            {title || "Untitled Quizzes"}
           </Typography>
 
           <Box sx={{ mb: 2 }}>
             <Chip
               icon={<CategoryIcon />}
-              label={category}
+              label={subject || "No Subject"}
               size="small"
               sx={{ mr: 1, mb: 1 }}
             />
             <Chip
-              label={difficulty}
+              label={difficulty || "Unknown"}
               color={getDifficultyColor(difficulty)}
               size="small"
               sx={{ mr: 1, mb: 1 }}
             />
             <Chip
-              label={`${points} Points`}
+              label={`${points || 0} Points`}
               color="secondary"
               size="small"
               sx={{ mb: 1 }}
@@ -105,53 +104,33 @@ const QuizCard = ({ quiz, userProgress }) => {
             color="text.secondary"
             sx={{
               mb: 2,
-              display: '-webkit-box',
+              display: "-webkit-box",
               WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}
           >
-            {description}
+            {description || "No description available."}
           </Typography>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <TimerIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <TimerIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
             <Typography variant="body2" color="text.secondary">
-              {timeLimit} minutes
+              {timeLimit ? `${timeLimit} minutes` : "No time limit"}
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <QuestionIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <QuestionIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
             <Typography variant="body2" color="text.secondary">
               {questionCount} questions
             </Typography>
           </Box>
-
-          {userProgress && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Progress: {userProgress}%
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={userProgress}
-                color={getProgressColor(userProgress)}
-                sx={{ height: 6, borderRadius: 1 }}
-              />
-            </Box>
-          )}
         </CardContent>
 
         <CardActions sx={{ p: 2, pt: 0 }}>
-          <Button
-            size="small"
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={handleStartQuiz} // Using the updated handler here
-          >
-            {userProgress ? 'Continue Quiz' : 'Start Quiz'}
+          <Button size="small" color="primary" variant="contained" fullWidth onClick={handleStartQuiz}>
+            {userProgress ? "Continue Quiz" : "Start Quiz"}
           </Button>
         </CardActions>
       </Card>
