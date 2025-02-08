@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -17,7 +17,7 @@ import QuestionCard from '../components/quiz/QuestionCard';
 import { submitQuiz } from '../store/slices/quizSlice';
 
 const QuizAttempt = () => {
-  const { id } = useParams();
+  const { _id } = useParams();  // Using _id as MongoDB identifier
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentQuiz, isLoading } = useSelector((state) => state.quiz);
@@ -28,14 +28,12 @@ const QuizAttempt = () => {
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
   const [showTimeWarning, setShowTimeWarning] = useState(false);
 
-  // Initialize timer
   useEffect(() => {
     if (currentQuiz?.timeLimit) {
       setTimeLeft(currentQuiz.timeLimit * 60);
     }
   }, [currentQuiz]);
 
-  // Timer countdown
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setInterval(() => {
@@ -80,11 +78,11 @@ const QuizAttempt = () => {
 
   const handleSubmitQuiz = async () => {
     const result = await dispatch(submitQuiz({
-      id,
+      _id,
       answers: Object.values(answers),
     })).unwrap();
 
-    navigate(`/quizzes/${id}/results`, {
+    navigate(`/quizzes/${_id}/results`, {
       state: { results: result },
     });
   };
@@ -103,7 +101,6 @@ const QuizAttempt = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* Timer */}
       <Box
         sx={{
           position: 'fixed',
@@ -130,7 +127,6 @@ const QuizAttempt = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Question Card */}
         <QuestionCard
           question={currentQuestion}
           currentQuestion={currentQuestionIndex + 1}
@@ -139,7 +135,6 @@ const QuizAttempt = () => {
           onAnswerSelect={handleAnswerSelect}
         />
 
-        {/* Navigation Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
           <Button
             variant="outlined"
@@ -159,7 +154,6 @@ const QuizAttempt = () => {
         </Box>
       </motion.div>
 
-      {/* Confirm Submit Dialog */}
       <Dialog
         open={showConfirmSubmit}
         onClose={() => setShowConfirmSubmit(false)}
@@ -178,7 +172,6 @@ const QuizAttempt = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Time Warning Dialog */}
       <Dialog
         open={showTimeWarning}
         onClose={() => setShowTimeWarning(false)}

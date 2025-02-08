@@ -2,61 +2,65 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from '../../services/authService';
 
 const initialState = {
-  user: JSON.parse(localStorage.getItem('user')) || null,  // Load user from localStorage if available
-  token: localStorage.getItem('token'),  // Load token from localStorage
+  user: JSON.parse(localStorage.getItem('user')) || null,  
+  token: localStorage.getItem('token') || null,  
   isLoading: false,
   error: null,
   successMessage: null,
 };
 
+// Login Action
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
-      localStorage.setItem('token', response.token); // Store token in localStorage
-      localStorage.setItem('user', JSON.stringify(response)); // Store user in localStorage
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response));
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      return rejectWithValue(error.response?.data?.message || error.message || 'Login failed');
     }
   }
 );
 
+// Register Action
 export const register = createAsyncThunk(
   'auth/register',
   async (data, { rejectWithValue }) => {
     try {
       const response = await authService.register(data);
-      localStorage.setItem('token', response.token); // Store token in localStorage
-      localStorage.setItem('user', JSON.stringify(response)); // Store user in localStorage
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response));
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      return rejectWithValue(error.response?.data?.message || error.message || 'Registration failed');
     }
   }
 );
 
+// Get Profile Action
 export const getProfile = createAsyncThunk(
   'auth/getProfile',
   async (_, { rejectWithValue }) => {
     try {
       return await authService.getProfile();
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to get profile');
+      return rejectWithValue(error.response?.data?.message || error.message || 'Failed to get profile');
     }
   }
 );
 
+// Update Profile Action
 export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
-  async (profileData, { getState, rejectWithValue }) => {
+  async (profileData, { rejectWithValue }) => {
     try {
       const updatedUser = await authService.updateProfile(profileData);
-      localStorage.setItem('user', JSON.stringify(updatedUser));  // Update user data in localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));  
       return updatedUser;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Profile update failed');
+      return rejectWithValue(error.response?.data?.message || error.message || 'Profile update failed');
     }
   }
 );
@@ -68,11 +72,11 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.isLoading = false;
       state.error = null;
       state.successMessage = null;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      authService.logout();
     },
     clearError: (state) => {
       state.error = null;

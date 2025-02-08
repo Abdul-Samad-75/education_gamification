@@ -10,37 +10,50 @@ const initialState = {
   error: null,
 };
 
+// Utility function for safe error extraction
+const extractErrorMessage = (error) => {
+  return error?.response?.data?.message || 'Something went wrong';
+};
+
+// Fetch all quizzes
 export const fetchQuizzes = createAsyncThunk(
   'quiz/fetchQuizzes',
   async (_, { rejectWithValue }) => {
     try {
       return await quizService.getAllQuizzes();
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch quizzes');
+      return rejectWithValue(extractErrorMessage(error));
     }
   }
 );
 
+// Fetch quiz by _id (Prevents unnecessary API calls)
 export const fetchQuizById = createAsyncThunk(
   'quiz/fetchQuizById',
-  async (id, { rejectWithValue }) => {
+  async (_id, { getState, rejectWithValue }) => {
+    const { quiz } = getState();
+    if (quiz.currentQuiz?._id === _id) return quiz.currentQuiz; // Prevents redundant fetching
+
     try {
-      const quiz = await quizService.getQuizById(id);
-      console.log('Fetched quiz:', quiz); // Log the fetched quiz data for debugging
+      const quiz = await quizService.getQuizById(_id);
+      console.log('Fetched quiz:', quiz); // Debug log
       return quiz;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch quiz');
+      console.error('Error fetching quiz:', error);
+      return rejectWithValue(extractErrorMessage(error));
     }
   }
 );
 
+// Submit quiz answers
 export const submitQuiz = createAsyncThunk(
   'quiz/submitQuiz',
-  async ({ id, answers }, { rejectWithValue }) => {
+  async ({ _id, answers }, { rejectWithValue }) => {
     try {
-      return await quizService.submitQuiz(id, answers);
+      return await quizService.submitQuiz(_id, answers);
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to submit quiz');
+      console.error('Quiz submission failed:', error);
+      return rejectWithValue(extractErrorMessage(error));
     }
   }
 );
@@ -51,12 +64,14 @@ const quizSlice = createSlice({
   reducers: {
     setUserAnswer: (state, action) => {
       const { questionIndex, answer } = action.payload;
+      state.userAnswers = [...state.userAnswers]; // Ensures immutability
       state.userAnswers[questionIndex] = answer;
     },
     clearQuizState: (state) => {
       state.currentQuiz = null;
       state.userAnswers = [];
       state.quizResults = null;
+      state.error = null; // Reset errors as well
     },
   },
   extraReducers: (builder) => {
@@ -74,21 +89,27 @@ const quizSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // Fetch Quiz by ID
+      
+      // Fetch Quiz by _id
       .addCase(fetchQuizById.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchQuizById.fulfilled, (state, action) => {
-        console.log('Quiz fetched successfully:', action.payload); // Log the fetched quiz
+        console.log('Quiz fetched successfully:', action.payload); // Debug log
         state.isLoading = false;
         state.currentQuiz = action.payload;
-        state.userAnswers = new Array(action.payload.questions.length).fill(null);
+
+        // Ensure questions exist before setting userAnswers
+        state.userAnswers = action.payload?.questions 
+          ? new Array(action.payload.questions.length).fill(null) 
+          : [];
       })
       .addCase(fetchQuizById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
+      
       // Submit Quiz
       .addCase(submitQuiz.pending, (state) => {
         state.isLoading = true;

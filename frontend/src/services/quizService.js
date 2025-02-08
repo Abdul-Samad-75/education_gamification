@@ -6,24 +6,18 @@ const quizService = {
     return response.data;
   },
 
-  async getQuizById(id) {
-    try {
-      const response = await api.get(`/quizzes/${id}`);
-      console.log('Quiz by ID response:', response.data); // Log the response to verify
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching quiz by ID:", error);
-      throw error;  // Re-throwing the error to be handled in the thunk
-    }
-  },
-
-  async submitQuiz(id, answers) {
-    const response = await api.post(`/quizzes/${id}/submit`, { answers });
+  async getQuizById(_id) {  // Use _id here
+    const response = await api.get(`/quizzes/${_id}`);
     return response.data;
   },
 
-  async getQuizResults(id) {
-    const response = await api.get(`/quizzes/${id}/results`);
+  async submitQuiz(_id, answers) {  // Use _id here
+    const response = await api.post(`/quizzes/${_id}/submit`, { answers });
+    return response.data;
+  },
+
+  async getQuizResults(_id) {  // Use _id here
+    const response = await api.get(`/quizzes/${_id}/results`);
     return response.data;
   },
 
@@ -32,13 +26,13 @@ const quizService = {
     return response.data;
   },
 
-  async updateQuiz(id, quizData) {
-    const response = await api.put(`/quizzes/${id}`, quizData);
+  async updateQuiz(_id, quizData) {  // Use _id here
+    const response = await api.put(`/quizzes/${_id}`, quizData);
     return response.data;
   },
 
-  async deleteQuiz(id) {
-    const response = await api.delete(`/quizzes/${id}`);
+  async deleteQuiz(_id) {  // Use _id here
+    const response = await api.delete(`/quizzes/${_id}`);
     return response.data;
   }
 };

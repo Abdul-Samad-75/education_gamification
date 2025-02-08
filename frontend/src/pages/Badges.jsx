@@ -17,7 +17,7 @@ import { fetchBadges, fetchUserBadges } from '../store/slices/badgeSlice';
 
 const Badges = () => {
   const dispatch = useDispatch();
-  const { badges, userBadges, isLoading } = useSelector((state) => state.badge);
+  const { badges, userBadges, isLoading, error } = useSelector((state) => state.badge);
   
   const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,17 +31,38 @@ const Badges = () => {
     setCurrentTab(newValue);
   };
 
-  const filteredBadges = badges.filter((badge) =>
+  // Early return if data is loading or there is an error
+  if (isLoading) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Typography variant="h6" color="text.secondary">Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Typography variant="h6" color="text.secondary">Error loading data. Please try again.</Typography>
+      </Box>
+    );
+  }
+
+  // Check if badges and userBadges are defined and are arrays
+  const validBadges = Array.isArray(badges) ? badges : [];
+  const validUserBadges = Array.isArray(userBadges) ? userBadges : [];
+
+  const filteredBadges = validBadges.filter((badge) =>
     badge.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     badge.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const earnedBadges = filteredBadges.filter((badge) =>
-    userBadges.some((userBadge) => userBadge.id === badge.id)
+    validUserBadges.some((userBadge) => userBadge.id === badge.id)
   );
 
   const unearnedBadges = filteredBadges.filter((badge) =>
-    !userBadges.some((userBadge) => userBadge.id === badge.id)
+    !validUserBadges.some((userBadge) => userBadge.id === badge.id)
   );
 
   const displayBadges = currentTab === 0 ? filteredBadges : 
@@ -111,7 +132,7 @@ const Badges = () => {
               >
                 <BadgeCard
                   badge={badge}
-                  isEarned={userBadges.some((userBadge) => userBadge.id === badge.id)}
+                  isEarned={validUserBadges.some((userBadge) => userBadge.id === badge.id)}
                 />
               </motion.div>
             </Grid>
@@ -165,7 +186,7 @@ const Badges = () => {
             </Grid>
             <Grid item xs={4}>
               <Typography variant="h4" color="primary" sx={{ fontWeight: 'bold' }}>
-                {Math.round((earnedBadges.length / badges.length) * 100)}%
+                {Math.round((earnedBadges.length / validBadges.length) * 100)}%
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Completion Rate

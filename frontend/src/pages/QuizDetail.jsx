@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Container,
   Paper,
@@ -8,191 +8,99 @@ import {
   Box,
   Button,
   Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   CircularProgress,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Timer as TimerIcon,
   QuestionAnswer as QuestionIcon,
   EmojiEvents as TrophyIcon,
-  Info as InfoIcon,
-} from '@mui/icons-material';
-import { motion } from 'framer-motion';
-import { fetchQuizById } from '../store/slices/quizSlice';
+} from "@mui/icons-material";
+import { motion } from "framer-motion";
+import { fetchQuizById } from "../store/slices/quizSlice";
 
 const QuizDetail = () => {
-  const { id } = useParams();
+  const { _id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentQuiz, isLoading, error } = useSelector((state) => state.quiz);
-  const [showRules, setShowRules] = useState(false);
+console.log(_id);
 
   useEffect(() => {
-    dispatch(fetchQuizById(id));
-  }, [dispatch, id]);
-
-  const handleStartQuiz = () => {
-    navigate(`/quiz/${id}`);
-  };
+    dispatch(fetchQuizById(_id));
+  }, [dispatch, _id]);
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Container maxWidth="md" sx={{ py: 4, display: "flex", justifyContent: "center" }}>
         <CircularProgress />
-      </Box>
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ textAlign: 'center', py: 8 }}>
+      <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h6" color="error">
-          There was an error fetching the quiz. Please try again later.
+          Error: {error}
         </Typography>
-      </Box>
+      </Container>
     );
   }
 
   if (!currentQuiz) {
-    navigate('/404'); // Redirect to a 404 page if quiz is not found
-    return null;
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography variant="h6" color="textSecondary">
+          No quiz found!
+        </Typography>
+      </Container>
+    );
   }
-
-  const rules = [
-    'You cannot go back to previous questions once answered',
-    'Each question has a time limit based on difficulty',
-    'Points are awarded based on accuracy and time taken',
-    'You need to complete all questions to receive a score',
-    'Results will be shown immediately after completion',
-  ];
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Paper sx={{ p: 4, borderRadius: 2 }}>
-          {/* Quiz Header */}
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
             {currentQuiz.title}
           </Typography>
 
           <Box sx={{ mb: 3 }}>
-            <Chip
-              label={currentQuiz.category}
-              color="primary"
-              sx={{ mr: 1 }}
-            />
-            <Chip
-              label={currentQuiz.difficulty}
-              color={
-                currentQuiz.difficulty === 'Beginner'
-                  ? 'success'
-                  : currentQuiz.difficulty === 'Intermediate'
-                  ? 'warning'
-                  : 'error'
-              }
-              sx={{ mr: 1 }}
-            />
-            <Chip
-              icon={<TrophyIcon />}
-              label={`${currentQuiz.points} Points`}
-              color="secondary"
-            />
+            <Chip label={currentQuiz.subject} color="primary" sx={{ mr: 1 }} />
+            <Chip label={currentQuiz.difficulty} color="success" sx={{ mr: 1 }} />
+            <Chip icon={<TrophyIcon />} label={`${currentQuiz.points} Points`} color="secondary" />
           </Box>
 
           <Typography variant="body1" paragraph>
             {currentQuiz.description}
           </Typography>
 
-          {/* Quiz Details */}
           <List sx={{ mb: 3 }}>
             <ListItem>
               <ListItemIcon>
                 <TimerIcon color="primary" />
               </ListItemIcon>
-              <ListItemText
-                primary="Time Limit"
-                secondary={`${currentQuiz.timeLimit} minutes`}
-              />
+              <ListItemText primary="Time Limit" secondary={`${currentQuiz.timeLimit} minutes`} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <QuestionIcon color="primary" />
               </ListItemIcon>
-              <ListItemText
-                primary="Questions"
-                secondary={`${currentQuiz.questionCount} questions`}
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <TrophyIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Passing Score"
-                secondary={`${currentQuiz.passingScore}%`}
-              />
+              <ListItemText primary="Questions" secondary={`${currentQuiz.questions?.length} questions`} />
             </ListItem>
           </List>
 
-          {/* Action Buttons */}
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleStartQuiz}
-              sx={{ flex: 1 }}
-              aria-label="Start the quiz"
-            >
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button variant="contained" color="primary" onClick={() => navigate(`/quizzes/${_id}/attempt`)}>
               Start Quiz
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              startIcon={<InfoIcon />}
-              onClick={() => setShowRules(true)}
-              aria-label="View Quiz Rules"
-            >
-              View Rules
             </Button>
           </Box>
         </Paper>
       </motion.div>
-
-      {/* Rules Dialog */}
-      <Dialog
-        open={showRules}
-        onClose={() => setShowRules(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Quiz Rules</DialogTitle>
-        <DialogContent sx={{ maxHeight: 400, overflow: 'auto' }}>
-          <List>
-            {rules.map((rule, index) => (
-              <ListItem key={index}>
-                <ListItemIcon>
-                  <InfoIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText primary={rule} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowRules(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };
