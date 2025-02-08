@@ -130,9 +130,97 @@ const submitQuiz = asyncHandler(async (req, res) => {
     });
 });
 
+
+// @desc    Get quiz results
+// @route   GET /api/quizzes/:id/results
+// @access  Private
+const getQuizResults = asyncHandler(async (req, res) => {
+    const quiz = await Quiz.findById(req.params.id);
+    
+    if (!quiz) {
+        res.status(404);
+        throw new Error('Quiz not found');
+    }
+
+    const userResults = await User.findById(req.user.id)
+        .select('completedQuizzes')
+        .populate({
+            path: 'completedQuizzes.quiz',
+            match: { _id: req.params.id }
+        });
+
+    const quizAttempt = userResults.completedQuizzes.find(
+        attempt => attempt.quiz && attempt.quiz._id.toString() === req.params.id
+    );
+
+    if (!quizAttempt) {
+        res.status(404);
+        throw new Error('No results found for this quiz');
+    }
+
+    res.json({
+        score: quizAttempt.score,
+        completedAt: quizAttempt.completedAt,
+        quizTitle: quiz.title,
+        totalQuestions: quiz.questions.length
+    });
+});
+
+// @desc    Update quiz
+// @route   PUT /api/quizzes/:id
+// @access  Private/Admin
+const updateQuiz = asyncHandler(async (req, res) => {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+        res.status(404);
+        throw new Error('Quiz not found');
+    }
+
+    // Check if user is admin or quiz creator
+    if (quiz.creator.toString() !== req.user.id && !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to update this quiz');
+    }
+
+    const updatedQuiz = await Quiz.findByIdAndUpdate(
+        req.params.id,
+        { ...req.body },
+        { new: true }
+    );
+
+    res.json(updatedQuiz);
+});
+
+// @desc    Delete quiz
+// @route   DELETE /api/quizzes/:id
+// @access  Private/Admin
+const deleteQuiz = asyncHandler(async (req, res) => {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+        res.status(404);
+        throw new Error('Quiz not found');
+    }
+
+    // Check if user is admin or quiz creator
+    if (quiz.creator.toString() !== req.user.id && !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to delete this quiz');
+    }
+
+    await quiz.remove();
+
+    res.json({ message: 'Quiz removed' });
+});
+
 module.exports = {
     createQuiz,
     getQuizzes,
     getQuizById,
     submitQuiz,
+    getQuizResults,
+    updateQuiz,
+    deleteQuiz
+
 };

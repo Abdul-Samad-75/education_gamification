@@ -15,7 +15,7 @@ export const fetchBadges = createAsyncThunk(
     try {
       return await badgeService.getAllBadges();
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch badges');
+      return rejectWithValue(error?.response?.data?.message || error?.message || 'Failed to fetch badges');
     }
   }
 );
@@ -26,7 +26,7 @@ export const fetchUserBadges = createAsyncThunk(
     try {
       return await badgeService.getUserBadges();
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user badges');
+      return rejectWithValue(error?.response?.data?.message || error?.message || 'Failed to fetch user badges');
     }
   }
 );
@@ -37,7 +37,7 @@ export const fetchBadgeById = createAsyncThunk(
     try {
       return await badgeService.getBadgeById(id);
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch badge');
+      return rejectWithValue(error?.response?.data?.message || error?.message || 'Failed to fetch badge');
     }
   }
 );
@@ -47,7 +47,10 @@ const badgeSlice = createSlice({
   initialState,
   reducers: {
     clearBadgeState: (state) => {
+      state.badges = [];
+      state.userBadges = [];
       state.currentBadge = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {

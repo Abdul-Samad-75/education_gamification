@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   ListItem,
   ListItemAvatar,
@@ -7,10 +8,7 @@ import {
   Box,
   Chip,
 } from '@mui/material';
-import {
-  EmojiEvents as TrophyIcon,
-  Whatshot as FireIcon,
-} from '@mui/icons-material';
+import { EmojiEvents as TrophyIcon, Whatshot as FireIcon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
 const LeaderboardRow = ({ user, rank, isCurrentUser }) => {
@@ -33,6 +31,8 @@ const LeaderboardRow = ({ user, rank, isCurrentUser }) => {
     }
     return null;
   };
+
+  if (!user) return null; // Check if user data exists
 
   return (
     <motion.div
@@ -76,14 +76,14 @@ const LeaderboardRow = ({ user, rank, isCurrentUser }) => {
         {/* Avatar and Name */}
         <ListItemAvatar>
           <Avatar
-            src={user.avatar}
+            src={user.avatar || '/default-avatar.png'} // Use a fallback if no avatar
             sx={{
               bgcolor: isCurrentUser ? 'primary.main' : 'secondary.main',
               border: isCurrentUser ? '2px solid' : 'none',
               borderColor: 'primary.main',
             }}
           >
-            {user.name.charAt(0)}
+            {user.name ? user.name.charAt(0) : 'U'} {/* Fallback for missing names */}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
@@ -95,7 +95,7 @@ const LeaderboardRow = ({ user, rank, isCurrentUser }) => {
                 color: isCurrentUser ? 'primary.main' : 'text.primary',
               }}
             >
-              {user.name}
+              {user.name || 'Unknown User'}
             </Typography>
           }
           secondary={
@@ -125,7 +125,7 @@ const LeaderboardRow = ({ user, rank, isCurrentUser }) => {
               color: isCurrentUser ? 'primary.main' : 'text.primary',
             }}
           >
-            {user.points}
+            {user.points || 0}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             points
